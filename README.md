@@ -82,7 +82,9 @@ Current Features
 
 Future enhancements
 - Authentication and user management
+- 
 - Drag-and-drop to move/resize events
+- 
 - Event recurrence patterns
 - Event sharing & invitations
 - Multiple calendar views (week, month, agenda)
@@ -90,5 +92,7 @@ Future enhancements
 - WebSockets for live updates across clients
 
 How to run production build
+
 npm run build
+
 npm run dev
