@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IEvent {
-  id?: string;
+  _id?: string;  // Changed from id to _id to match MongoDB
   title: string;
   description?: string;
   startTime?: string;

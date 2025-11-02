@@ -23,7 +23,14 @@ export default function useEvents() {
     try {
       const res = await fetch("/api/events");
       const data = await res.json();
-      setEvents(data);
+      
+      // Transform all events to use _id instead of id
+      const transformedEvents = data.map((event: any) => ({
+        ...event,
+        _id: event.id // Map MongoDB's id to our _id
+      }));
+      
+      setEvents(transformedEvents);
     } catch (error) {
       console.error("Error fetching events:", error);
     }
@@ -37,10 +44,26 @@ export default function useEvents() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(event),
       });
-      const newEvent = await res.json();
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to add event');
+      }
+      const data = await res.json();
+      console.log("Server response for new event:", data);
+      
+      // Transform the response to use _id instead of id
+      const newEvent: Event = {
+        ...data,
+        _id: data.id, // Map MongoDB's id to our _id
+      };
+      
+      if (!newEvent._id) {
+        throw new Error('Server did not return an event ID');
+      }
       setEvents((prev) => [...prev, newEvent]);
     } catch (error) {
       console.error("Error adding event:", error);
+      throw error;
     }
   };
 

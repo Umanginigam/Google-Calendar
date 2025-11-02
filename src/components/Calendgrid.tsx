@@ -151,14 +151,29 @@ export default function CalendarGrid({
   const handleEventClick = (event: any, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log("Event clicked:", event);
+    console.log("Event ID:", event._id);
     
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const x = rect.right + 10;
     const y = rect.top;
 
-    console.log("Preview coords:", { x, y });
+    // Store full event object and ensure we have all fields
+    const fullEvent = {
+      _id: event._id,  // This should come from MongoDB
+      title: event.title || '',
+      description: event.description || '',
+      date: event.date,
+      startTime: event.startTime || '',
+      endTime: event.endTime || ''
+    };
+    
+    if (!fullEvent._id) {
+      console.error('Warning: Event is missing _id:', fullEvent);
+    }
+    
+    console.log("Full event data:", fullEvent);
 
-    setSelectedEvent(event);
+    setSelectedEvent(fullEvent);
     setSelectedDate(event.date);
     setPreviewCoords({ x, y });
     setShowPreview(true);
@@ -170,23 +185,45 @@ export default function CalendarGrid({
   };
 
   const handleDeleteFromPreview = async () => {
-    if (selectedEvent?._id) {
+    try {
+      console.log("Selected event for deletion:", selectedEvent);
+      
+      if (!selectedEvent) {
+        console.error('No event selected for deletion');
+        return;
+      }
+      
+      if (!selectedEvent._id) {
+        console.error('Event has no _id:', selectedEvent);
+        return;
+      }
+
       if (window.confirm('Are you sure you want to delete this event?')) {
+        console.log("Attempting to delete event with ID:", selectedEvent._id);
         await deleteEvent(selectedEvent._id);
+        console.log("Event deleted successfully");
         setShowPreview(false);
         setSelectedEvent(null);
       }
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+      alert('Failed to delete event. Please try again.');
     }
   };
 
-  const handleAdd = (data: { 
+  const handleAdd = async (data: { 
     title: string; 
     description: string; 
     startTime: string; 
     endTime: string 
   }) => {
     if (selectedDate) {
-      addEvent({ _id: nanoid(), date: selectedDate, ...data });
+      try {
+        await addEvent({ date: selectedDate, ...data }); // Remove _id: nanoid(), let MongoDB handle it
+        console.log("Event added successfully");
+      } catch (error) {
+        console.error("Failed to add event:", error);
+      }
     }
     setShowModal(false);
   };
