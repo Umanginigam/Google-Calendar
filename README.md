@@ -4,7 +4,11 @@
 This project is a high-fidelity clone of Google Calendar built with Next.js (App Router), Tailwind CSS, Prisma + SQLite, and NextAuth for Google authentication.
 
 ## Live demo
-> https://google-calendar-5p6i.vercel.app/calendar
+> https://google-calendar-5p6i.vercel.app
+
+ https://github.com/user-attachments/assets/8d8d4abc-3989-4509-ac59-a5ab5190dd06
+
+
 
 ## Tech stack
 - Frontend: Next.js (App Router), React, TailwindCSS
